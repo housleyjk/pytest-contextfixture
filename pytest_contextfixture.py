@@ -10,8 +10,8 @@ def _make_fixture(fn, fixture_args, fixture_kwargs):
 
     @pytest.fixture(*fixture_args, **fixture_kwargs)
     @wraps(fn)
-    def actual_fixture(request):
-        ctxinst = ctxmgr(request)
+    def actual_fixture(request, *args, **kwargs):
+        ctxinst = ctxmgr(request, *args, **kwargs)
 
         # TODO: Proper exception propagation?
         request.addfinalizer(lambda: ctxinst.__exit__(None, None, None))
