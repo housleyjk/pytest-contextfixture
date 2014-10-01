@@ -10,11 +10,15 @@ def _make_fixture(fn, fixture_args, fixture_kwargs):
 
     @pytest.fixture(*fixture_args, **fixture_kwargs)
     @wraps(fn)
-    def actual_fixture(request, *args, **kwargs):
-        ctxinst = ctxmgr(request, *args, **kwargs)
+    def actual_fixture(*args, request=None, **kwargs):
+        ctxinst = ctxmgr(*args, request=request, **kwargs)
 
-        # TODO: Proper exception propagation?
-        request.addfinalizer(lambda: ctxinst.__exit__(None, None, None))
+        try:
+            # TODO: Proper exception propagation?
+            request.addfinalizer(lambda: ctxinst.__exit__(None, None, None))
+        except AttributeError:
+            raise TypeError('request not passed to contextfixture')
+            
         return ctxinst.__enter__()
 
     return actual_fixture
